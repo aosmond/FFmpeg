@@ -257,7 +257,13 @@ enc_dec_pcm(){
     cleanfiles="$cleanfiles $encfile"
     encfile=$(target_path ${encfile})
     ffmpeg -auto_conversion_filters -i $src_file "$@" -f $out_fmt -y ${encfile} || return
-    ffmpeg -auto_conversion_filters -bitexact -i ${encfile} -c:a pcm_${pcm_fmt} -fflags +bitexact -f ${dec_fmt} -
+    ffmpeg -auto_conversion_filters -bitexact ${decoder:+-c:a $decoder} -i ${encfile} -c:a pcm_${pcm_fmt} -fflags +bitexact -f ${dec_fmt} -
+}
+
+enc_dec_pcm_decoder(){
+    decoder=$1
+    shift 1
+    enc_dec_pcm "$@"
 }
 
 SCALE_FLAGS="+accurate_rnd+bitexact"
